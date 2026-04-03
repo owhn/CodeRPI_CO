@@ -28,7 +28,7 @@ int main() {
     }
 
     // Lance le transfert WiFi en arrière-plan
-    EmetteurCSV emetteur("192.168.137.1", 8080, "borne_1", "/home/pi/data.csv", mutexCSV);
+    EmetteurCSV emetteur("192.168.137.1", 8080, "borne_1", "/home/pi/borne_cpp/data.csv", mutexCSV);
     std::thread threadTransfert([&emetteur]() {
         while (!emetteur.connecter()) {
             std::this_thread::sleep_for(std::chrono::seconds(5));

@@ -3,11 +3,10 @@
 #include <sstream>
 #include <vector>
 #include <fcntl.h>
-#include <termios.h>
 #include <unistd.h>
 #include <cmath>
 
-GPS::GPS(const std::string& port, int baudrate)
+GPS::GPS(const std::string& port, speed_t baudrate)
     : _port(port), _baudrate(baudrate), _fd(-1),
       _latitude(0.0), _longitude(0.0), _valide(false), _running(false)
 {}
@@ -27,11 +26,11 @@ void GPS::demarrer() {
     // Configuration port série
     struct termios tty;
     tcgetattr(_fd, &tty);
-    cfsetispeed(&tty, B4800);
     tty.c_cflag = CS8 | CREAD | CLOCAL;
     tty.c_iflag = IGNPAR;
     tty.c_oflag = 0;
     tty.c_lflag = 0;
+    cfsetispeed(&tty, _baudrate);
     tcsetattr(_fd, TCSANOW, &tty);
 
     _running = true;

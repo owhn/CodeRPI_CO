@@ -2,10 +2,11 @@
 #include <string>
 #include <thread>
 #include <mutex>
+#include <termios.h>
 
 class GPS {
 public:
-    GPS(const std::string& port = "/dev/ttyUSB0", int baudrate = 4800);
+    GPS(const std::string& port = "/dev/ttyUSB0", speed_t baudrate = B4800);
     ~GPS();
 
     void demarrer();               // Lance le thread de lecture GPS

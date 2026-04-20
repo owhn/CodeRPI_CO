@@ -14,7 +14,6 @@
 
 #define RSTPIN RPI_V2_GPIO_P1_22
 
-using namespace std;
 
 /**
  * Constructor.
@@ -1143,7 +1142,7 @@ byte MFRC522::PCD_MIFARE_Transceive(	byte *sendData,		///< Pointer to the data t
  * Returns a __FlashStringHelper pointer to a status code name.
  * 
  */
-const string MFRC522::GetStatusCodeName(byte code	///< One of the StatusCode enums.
+const std::string MFRC522::GetStatusCodeName(byte code	///< One of the StatusCode enums.
 						      ) {
   switch (code) {
   case STATUS_OK:				return ("Success.");										break;
@@ -1196,7 +1195,7 @@ byte MFRC522::PICC_GetType(byte sak		///< The SAK byte returned from PICC_Select
  * Returns a String pointer to the PICC type name.
  * 
  */
-const string MFRC522::PICC_GetTypeName(byte piccType	///< One of the PICC_Type enums.
+const std::string MFRC522::PICC_GetTypeName(byte piccType	///< One of the PICC_Type enums.
 						     ) {
   switch (piccType) {
   case PICC_TYPE_ISO_14443_4:		return ("PICC compliant with ISO/IEC 14443-4");	break;

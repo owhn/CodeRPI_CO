@@ -8,7 +8,7 @@
 Borne* g_borne = nullptr;
 std::mutex mutexCSV;
 
-
+//arrêt propre à la réception d'un signal d'interruption (SIGINT(Ctrl+C)) ou de terminaison (SIGTERM)
 void gestionSignal(int signal) {
     std::cout << "\n[Main] Arrêt demandé..." << std::endl;
     if (g_borne)
@@ -21,6 +21,7 @@ int main() {
     Borne borne(mutexCSV);
     g_borne = &borne;
     std::signal(SIGINT, gestionSignal);
+    std::signal(SIGTERM, gestionSignal);
 
     if (!borne.initialiser()) {
         std::cerr << "[Main] Échec initialisation, arrêt." << std::endl;

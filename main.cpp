@@ -4,22 +4,21 @@
 #include <csignal>
 #include <thread>
 #include <mutex>
+#include <atomic>
 
-Borne* g_borne = nullptr;
+std::atomic<bool> running(true); // Indique si la borne doit continuer à fonctionner
 std::mutex mutexCSV;
 
 //arrêt propre à la réception d'un signal d'interruption (SIGINT(Ctrl+C)) ou de terminaison (SIGTERM)
 void gestionSignal(int signal) {
     std::cout << "\n[Main] Arrêt demandé..." << std::endl;
-    if (g_borne)
-        g_borne->arreter();
+    running = false;
 }
 
 int main() {
     std::cout << "=== Borne Course d'Orientation ===" << std::endl;
 
-    Borne borne(mutexCSV);
-    g_borne = &borne;
+    Borne borne(mutexCSV, running);
     std::signal(SIGINT, gestionSignal);
     std::signal(SIGTERM, gestionSignal);
 
@@ -31,14 +30,21 @@ int main() {
     // Lance le transfert WiFi en arrière-plan
     EmetteurCSV emetteur("192.168.137.1", 8080, "borne_1", "/home/pi/borne_cpp/data.csv", mutexCSV);
     std::thread threadTransfert([&emetteur]() {
-        while (!emetteur.connecter()) {
-            std::this_thread::sleep_for(std::chrono::seconds(5));
+        while (running) {
+            if (emetteur.connecter()) {
+                emetteur.attendreEtEnvoyer();
+                emetteur.fermer(); // Ferme la connexion après l'envoi pour libérer le file descriptor
+            }
+            else {
+                std::this_thread::sleep_for(std::chrono::seconds(5)); // Attendre avant de réessayer
+            }
         }
-        emetteur.attendreEtEnvoyer();
+        emetteur.fermer(); // Assure la fermeture du socket à l'arrêt (au cas où)
     });
     threadTransfert.detach();
 
-    borne.boucle(); // Bloquant — thread principal
+    borne.boucle(); // Bloquant — thread principal (sort quand running = false)
 
+    threadTransfert.join(); // attend que le thread transfert se termine proprement
     return 0;
 }

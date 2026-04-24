@@ -3,6 +3,7 @@
 #include "GPS.h"
 #include <string>
 #include <mutex>
+#include <atomic>
 
 // Pins GPIO (BCM)
 #define PIN_BUZZER 24
@@ -11,7 +12,7 @@
 
 class Borne {
 public:
-    Borne(std::mutex& mutexCSV);
+    Borne(std::mutex& mutexCSV, std::atomic<bool>& running);
     ~Borne();
 
     bool initialiser();   // Init GPIO + RFID + GPS
@@ -21,8 +22,8 @@ public:
 private:
     LecteurRFID _rfid;
     GPS         _gps;
-    bool        _running;
-    
+
+    std::atomic<bool>& _running;
     std::mutex& _mutexCSV;
     
     // GPIO

@@ -7,7 +7,7 @@
 #include <ctime>
 #include <thread>
 
-Borne::Borne(std::mutex& mutexCSV) : _mutexCSV(mutexCSV) {}
+Borne::Borne(std::mutex& mutexCSV, std::atomic<bool>& running) : _mutexCSV(mutexCSV), _running(running) {}
 
 Borne::~Borne() {
     arreter();
@@ -28,7 +28,6 @@ bool Borne::initialiser() {
     // Init GPS
     _gps.demarrer();
 
-    _running = true;
     std::cout << "[Borne] Prête." << std::endl;
     return true;
 }
@@ -66,7 +65,7 @@ void Borne::arreter() {
     _gps.arreter();
 }
 
-// ── GPIO ──────────────────────────────────────────────────────────────────────
+// GPIO 
 
 void Borne::_initGPIO() {
     pinMode(PIN_BUZZER, OUTPUT);
@@ -91,7 +90,7 @@ void Borne::_led(int pin, bool etat) {
     digitalWrite(pin, etat ? HIGH : LOW);
 }
 
-// ── Signaux ───────────────────────────────────────────────────────────────────
+// Signaux
 
 void Borne::_signalAutorise() {
     _led(PIN_LED_V, true);
@@ -106,7 +105,7 @@ void Borne::_signalRefuse() {
     _led(PIN_LED_R, false);
 }
 
-// ── Enregistrement ────────────────────────────────────────────────────────────
+// Enregistrement 
 
 void Borne::_enregistrerPassage(const std::string& uid, double lat, double lon) {
     // Horodatage

@@ -14,7 +14,7 @@ TransfertPi::~TransfertPi() {
 }
 
 bool TransfertPi::connecter() {
-    // Crée un socket TCP (SOCK_STREAM) IPv4 (AF_INET)
+    // Crée un socket TCP (SOCK_STREAM) IPv4 (AF_INET) (sock = file descriptor du socket)
     sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock < 0) {
         std::cerr << "[ERREUR] Création socket échouée" << std::endl;
